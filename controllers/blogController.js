@@ -1,6 +1,8 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Blog from "../models/blogModel.js";
 
+
+//Function add blogs
 export const addBlog = asyncHandler(async (req, res) => {
 
 
@@ -13,7 +15,7 @@ export const addBlog = asyncHandler(async (req, res) => {
         throw new Error("Please enter all the required fields");
     }
 
-
+    //creating blog
     const blog = await Blog.create({
         title,
         content,
@@ -27,7 +29,7 @@ export const addBlog = asyncHandler(async (req, res) => {
 })
 
 
-
+//Function to edit blog
 export const editBlog = asyncHandler(async (req, res) => {
 
 
@@ -40,11 +42,12 @@ export const editBlog = asyncHandler(async (req, res) => {
         throw new Error("Please provide blogId");
     }
 
-
+    //check if blog exist or not
     const blog = await Blog.findById(blogId)
 
     if (blog) {
 
+        //updating blog
         const updatedBlog = await Blog.findByIdAndUpdate(blogId, {
             title: title,
             content: content
@@ -63,24 +66,22 @@ export const editBlog = asyncHandler(async (req, res) => {
     }
 })
 
-
+//Function to delete blog
 export const deleteBlog = asyncHandler(async (req, res) => {
 
-
     const blogId = req.query.blogId;
-
-
 
     if (!blogId) {
         res.status(400);
         throw new Error("Please provide blogId");
     }
 
-
+    //Check if blog exist or not
     const blog = await Blog.findById(blogId)
 
     if (blog) {
 
+        //deleting blog record
         await Blog.findByIdAndDelete(blog._id).then(() => {
             res.json({
                 sts: "01",
@@ -115,22 +116,17 @@ export const getListOfBlogs = asyncHandler(async (req, res) => {
     const { blogId } = req?.params
 
     const blogs = await Blog.find() // Fetch all blogs
-        .populate("author", "userName email") // Populate author field with user details (you can choose fields to return)
-        .select("title content author") // Select only the fields you want to return
-        .sort({ createdAt: -1 }); // Sort by latest created at
-
+        .populate("author", "userName email")
+        .select("title content author")
+        .sort({ createdAt: -1 });
 
     // Format the blogs to include a short excerpt (first 100 characters of content)
     const formattedBlogs = blogs.map(blog => ({
         id: blog._id,
         title: blog.title,
-        author: blog.author.userName, // Use the populated user name
+        author: blog.author.userName,
         excerpt: blog.content.substring(0, 100) + (blog.content.length > 100 ? '...' : ''), // Short excerpt
     }));
-
-
-
-
     res.status(200).json({ sts: "01", msg: "Blog data fetched successfully", result: formattedBlogs });
 
 

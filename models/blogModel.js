@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
+
 
 const blogSchema = new mongoose.Schema(
     {

@@ -11,6 +11,7 @@ export const registerUser = asyncHandler(async (req, res) => {
         throw new Error("Please enter all the required fields");
     }
 
+    //Check if provided email alraedy exist or not
     const user = await User.findOne({
         email: email
     });
@@ -20,7 +21,7 @@ export const registerUser = asyncHandler(async (req, res) => {
         throw new Error("User already exists");
     } else {
 
-
+        //Creating a record of user
         const createUser = await User.create({
             userName,
             email,
@@ -82,7 +83,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     }
 });
 
-
+//Function to edit details of a user
 export const editUser = asyncHandler(async (req, res) => {
 
     const { userId, userName, email, password } = req.body;
@@ -110,7 +111,7 @@ export const editUser = asyncHandler(async (req, res) => {
                 userName: userName,
                 email: email,
                 password: password
-            })
+            }, { new: true })
 
             if (updatedUser) {
 
@@ -130,11 +131,11 @@ export const editUser = asyncHandler(async (req, res) => {
 export const getUsers = asyncHandler(async (req, res) => {
 
     const blog = req.query.blog;
-   
+
 
     let users;
     if (blog) {
-        
+
         users = await User.find().populate({
             path: 'blogs',   // The field in Blog that references the user
             select: 'title content', // Specify which fields to return from Blog
